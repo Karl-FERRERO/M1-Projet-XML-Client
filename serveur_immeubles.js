@@ -41,8 +41,11 @@ app.get('/', function(req, res) {
                 ["http://code.jquery.com/jquery.js"],
                 function (err, window) {
 
+                    var ref =  window.$("h1 span:nth-child(1)").text();
+                    console.log(ref);
+
                     // TODO : pas précis, lieux manquants, à alimenter autrement (voir SPARQL ?)
-                    var adresse = window.$("h1 span:nth-child(1)").text() + " " + window.$("h1 span:nth-child(2)").text();
+                    var adresse = window.$("h1 span:nth-child(2)").text() + " " + window.$("h1 span:nth-child(3)").text();
                     console.log("Google maps : " + adresse);
 
                     var params = {
@@ -66,11 +69,11 @@ app.get('/', function(req, res) {
                         // fetch asynchronously the binary image
 
                         // On enregistre la nouvelle image générée avec Google Maps
-                        fs.writeFileSync('./public/test_map.png', binaryImage, 'binary');
+                        fs.writeFileSync('./public/img/img-' + ref + '.png', binaryImage, 'binary');
                         console.log("Nouvelle image enregistrée");
 
                         // Une fois que la nouvelle image est enregistrée, on affiche au client
-                        buildHtml(res, body);
+                        buildHtml(res, body, ref);
 
                     });
 
@@ -80,29 +83,41 @@ app.get('/', function(req, res) {
     })
 });
 
-function buildHtml(res, content) {
+function buildHtml(res, content, ref) {
 
-    // Avec lecture de l'image générée par Google Maps
-    fs.readFile('./public/test_map.png', function(err, data) {
+    // On charge le css
+    fs.readFile('./public/css/style_immeubles.css', function(err, data) {
         if (err) {
             throw err; // Fail if the file can't be read.
         }
 
-        //data.toString()
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write('<!DOCTYPE html>'+
-            '<html>'+
-            '    <head>'+
-            '        <meta charset="utf-8" />'+
-            '        <title>Consultation</title>'+
-            '    </head>'+
-            '    <body>'+
-            content +
-            '    <br/>' +
-            '    <img src="data:image/png;base64,' + new Buffer(data).toString('base64') + '" />'+
-            '    </body>'+
-            '</html>');
-        res.end();
+        var css = data.toString();
+        console.log("CSS chargé : " + css);
+
+        // Avec lecture de l'image générée par Google Maps
+        fs.readFile('./public/img/img-' + ref + '.png', function(err, data) {
+            if (err) {
+                throw err; // Fail if the file can't be read.
+            }
+
+            var dataImg = new Buffer(data).toString('base64');
+            content = content.replace('img-' + ref, dataImg);
+            console.log(content);
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write('<!DOCTYPE html>'+
+                '<html>'+
+                '    <head>'+
+                '        <style>' + css + '</style' +
+                '        <meta charset="utf-8" />'+
+                '        <title>Consultation</title>'+
+                '    </head>'+
+                '    <body>'+
+                content +
+                '    </body>'+
+                '</html>');
+        });
+
     });
 
 }

@@ -1,0 +1,12 @@
+div.fiche {
+    margin: auto;
+    width: 80%;
+    text-align: center;
+}
+h1 {
+    color: #64b7ff;
+}
+h1 span:nth-child(1) {
+    font-style: italic;
+    font-size: 11px;
+}
