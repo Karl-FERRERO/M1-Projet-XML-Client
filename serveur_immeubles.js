@@ -140,13 +140,23 @@ function traiterTexte(texte) {
 
 }
 
-app.get('/regions/:nomregion', function(req, res) {
+app.get('/regions/:nomregion/:page', function(req, res) {
 
     var region = req.params.nomregion;
+    var page = req.params.page;
     // Première lettre majuscule
     region = region.charAt(0).toUpperCase() + region.substring(1).toLowerCase();
 
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-region.qxy?region=' + region,
+    //TODO Récupérer dynamiquement le nombre restant
+    var nbPages = 10;
+    var pagination = '<ul class="pagination pagination-lg">';
+    //TODO Limiter le nombre de pages affichées et avancer
+    for (var i=1 ; i<nbPages ; i++) {
+        pagination += '<li><a href="/regions/' + req.params.nomregion + '/' + i + '">' + i + '</a></li>';
+    }
+    pagination += '</ul><br/>';
+
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-region.qxy?region=' + region + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -172,7 +182,7 @@ app.get('/regions/:nomregion', function(req, res) {
                             '    </head>' +
                             '    <body onload="initialisation()">' +
                             nav +
-                            '<center>Immeubles de la région <strong>' + region + '</strong></center><br/>' +
+                            pagination +
                             window.$(".fiche").parent().html() +
                             '    </body>' +
                             '</html>');
