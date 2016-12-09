@@ -20,3 +20,15 @@ function initialisation() {
     }
 
 }
+
+function initialiserFormRegions() {
+
+    document.getElementById("formregions").addEventListener("submit", function(e){
+
+        e.preventDefault();
+        var select = document.getElementsByName("regions")[0];
+        window.location = '/regions/' + select.options[select.selectedIndex].value;
+        // ou text ?
+    });
+
+}

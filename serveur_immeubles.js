@@ -93,21 +93,22 @@ app.get('/regions', function(req, res) {
                         });
 
                         // Création du formulaire
-                        var formulaireSelectionRegion = '<select name="regions" form="regionsform">';
+                        var formulaireSelectionRegion = '<form id="formregions"><select name="regions">';
                         for (var i=0 ; i<regions.length ; i++) {
                             formulaireSelectionRegion += '<option value="' + regions[i] + '">' + regions[i] + '</option>';
                         }
-                        formulaireSelectionRegion += '</select>';
+                        formulaireSelectionRegion += '</select><input type="submit" value="Afficher les monuments"></form>';
                         console.log(formulaireSelectionRegion);
 
                         res.writeHead(200, {'Content-Type': 'text/html'});
                         res.write('<!DOCTYPE html>' +
                             '<html>' +
                             '    <head>' +
+                            '      <script type="text/javascript" src="/js/app.js"></script>' +
                             '      <meta charset="utf-8" />' +
                             '      <title>Consultation</title>' +
                             '    </head>' +
-                            '    <body>' +
+                            '    <body onload="initialiserFormRegions()">' +
                                      formulaireSelectionRegion +
                             '    </body>' +
                             '</html>');
@@ -132,3 +133,20 @@ function traiterTexte(texte) {
     return texte;
 
 }
+
+app.get('/regions/:nomregion', function(req, res) {
+
+    res.setHeader('Content-Type', 'text/html');
+    res.write('<!DOCTYPE html>' +
+        '<html>' +
+        '    <head>' +
+        '      <script type="text/javascript" src="/js/app.js"></script>' +
+        '      <meta charset="utf-8" />' +
+        '      <title>Consultation</title>' +
+        '    </head>' +
+        '    <body>' +
+        '          Immeubles de la région <strong>' + req.params.nomregion + '</strong>' +
+        '    </body>' +
+        '</html>');
+    res.end();
+});
