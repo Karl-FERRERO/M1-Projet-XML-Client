@@ -92,6 +92,14 @@ app.get('/regions', function(req, res) {
                             return regions.indexOf(item) == pos;
                         });
 
+                        // Création du formulaire
+                        var formulaireSelectionRegion = '<select name="regions" form="regionsform">';
+                        for (var i=0 ; i<regions.length ; i++) {
+                            formulaireSelectionRegion += '<option value="' + regions[i] + '">' + regions[i] + '</option>';
+                        }
+                        formulaireSelectionRegion += '</select>';
+                        console.log(formulaireSelectionRegion);
+
                         res.writeHead(200, {'Content-Type': 'text/html'});
                         res.write('<!DOCTYPE html>' +
                             '<html>' +
@@ -100,7 +108,7 @@ app.get('/regions', function(req, res) {
                             '      <title>Consultation</title>' +
                             '    </head>' +
                             '    <body>' +
-                            regions.join("<br/>") +
+                                     formulaireSelectionRegion +
                             '    </body>' +
                             '</html>');
                         res.end();
