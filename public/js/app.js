@@ -21,15 +21,38 @@ function initialisation() {
 
 }
 
-function initialiserFormRegions() {
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+}
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+    for(var i = this.length - 1; i >= 0; i--) {
+        if(this[i] && this[i].parentElement) {
+            this[i].parentElement.removeChild(this[i]);
+        }
+    }
+}
 
-    document.getElementById("formregions").addEventListener("submit", function(e){
+function initialiserFormZone(niveau) {
+
+    document.getElementById("formzone").addEventListener("submit", function(e){
 
         e.preventDefault();
-        var select = document.getElementsByName("regions")[0];
-        var regionSelectionnee = select.options[select.selectedIndex].value; // ou text ?
-        window.location = '/regions/' + regionSelectionnee.toLowerCase() + '/1';
+        var select = document.getElementsByName(niveau)[0];
+        var lieu = select.options[select.selectedIndex].value; // ou text ?
 
+        window.location = '/zone/' + niveau + '/' + lieu.toLowerCase() + '/1';
+
+    });
+
+    document.getElementById("switchzone").addEventListener("change", function() {
+
+        var select = document.getElementsByName("zone")[0];
+        var zone = select.options[select.selectedIndex].value;
+
+        document.getElementsByClassName("submitformzone")[0].remove();
+        document.getElementById("formzone").innerHTML += "<br/><center><div class='loadermaison'></div></center>";
+
+        window.location = '/zone/' + zone;
     });
 
 }

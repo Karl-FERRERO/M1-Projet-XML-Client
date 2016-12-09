@@ -4,7 +4,7 @@ div.fiche {
     text-align: center;
 }
 h1 {
-    color: #64b7ff;
+    color: #0099cc;
 }
 h1 span:nth-child(1) {
     font-style: italic;
@@ -31,6 +31,12 @@ h1 span:nth-child(1) {
     color: white !important;
 }
 
+.submitformzone {
+    width: 100%;
+    background-color: #0099CC !important;
+    color: white !important;
+}
+
 select { text-align-last:center; }
 
 .navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
@@ -49,4 +55,25 @@ select { text-align-last:center; }
 
 .pagination>li>a, .pagination>li>span {
     color: #a9a9a9;
+}
+
+.loadermaison {
+    border: 16px solid #0099cc;
+    /*border-radius: 50%;
+    border-top: 16px;
+    border-bottom: 16px;*/
+    width: 70px;
+    height: 70px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
