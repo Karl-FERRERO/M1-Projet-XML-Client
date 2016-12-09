@@ -10,3 +10,7 @@ h1 span:nth-child(1) {
     font-style: italic;
     font-size: 11px;
 }
+
+.map {
+    height: 300px;
+}
