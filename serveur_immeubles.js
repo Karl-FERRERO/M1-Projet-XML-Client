@@ -57,3 +57,70 @@ app.get('/', function(req, res) {
         }
     )
 });
+
+app.get('/regions', function(req, res) {
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/liste_regions.xqy', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                // Manipulation de la structure HTML réceptionnée du XQuery
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (err, window) {
+
+                        var regions = [];
+                        window.$(".region").each( function(){
+
+                            var regionCourante = window.$(this).text();
+
+                            // Couper si ";" (cas RHÔNE-ALPES-;-BOURGOGNE)
+                            var regionDecomposee = regionCourante.split(";");
+                            if (regionDecomposee) {
+                                for (var i=0 ; i<regionDecomposee.length ; i++) {
+                                    regions.push(traiterTexte(regionDecomposee[i].trim()));
+                                    // On retire bien les potentiels espaces au début ou à la fin
+                                }
+                            }
+                            else {
+                                regions.push(traiterTexte(regionCourante));
+                            }
+
+                        } );
+
+                        // On supprime les doublons
+                        regions = regions.filter(function(item, pos) {
+                            return regions.indexOf(item) == pos;
+                        });
+
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write('<!DOCTYPE html>' +
+                            '<html>' +
+                            '    <head>' +
+                            '      <meta charset="utf-8" />' +
+                            '      <title>Consultation</title>' +
+                            '    </head>' +
+                            '    <body>' +
+                            regions.join("<br/>") +
+                            '    </body>' +
+                            '</html>');
+                        res.end();
+
+                    });
+
+            }
+        }
+    )
+});
+
+function traiterTexte(texte) {
+
+    // On remplace les espaces par des tirets
+    texte = texte.replace(/\s+/g, "-");
+    // ... en traitant le cas où des tirets se suivent à cause d'espaces mal placés initialement
+    texte =  texte.replace(/-+/g, "-");
+    // On met tout en majuscule
+    texte = texte.toUpperCase();
+
+    return texte;
+
+}
