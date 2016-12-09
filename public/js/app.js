@@ -27,8 +27,9 @@ function initialiserFormRegions() {
 
         e.preventDefault();
         var select = document.getElementsByName("regions")[0];
-        window.location = '/regions/' + select.options[select.selectedIndex].value;
-        // ou text ?
+        var regionSelectionnee = select.options[select.selectedIndex].value; // ou text ?
+        window.location = '/regions/' + regionSelectionnee.toLowerCase();
+
     });
 
 }

@@ -136,17 +136,44 @@ function traiterTexte(texte) {
 
 app.get('/regions/:nomregion', function(req, res) {
 
-    res.setHeader('Content-Type', 'text/html');
-    res.write('<!DOCTYPE html>' +
-        '<html>' +
-        '    <head>' +
-        '      <script type="text/javascript" src="/js/app.js"></script>' +
-        '      <meta charset="utf-8" />' +
-        '      <title>Consultation</title>' +
-        '    </head>' +
-        '    <body>' +
-        '          Immeubles de la région <strong>' + req.params.nomregion + '</strong>' +
-        '    </body>' +
-        '</html>');
-    res.end();
+    var region = req.params.nomregion;
+    // Première lettre majuscule
+    region = region.charAt(0).toUpperCase() + region.substring(1).toLowerCase();
+    
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-region.qxy?region=' + region,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                // Manipulation de la structure HTML réceptionnée du XQuery
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (err, window) {
+
+                        // On ajoute un élément pour la map pour chaque fiche
+                        window.$(".fiche").append('<div class="map"></div>');
+
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write('<!DOCTYPE html>' +
+                            '<html>' +
+                            '    <head>' +
+                            '      <link rel="stylesheet" type="text/css" href="/css/style_immeubles.css">' +
+                            '      <script type="text/javascript" src="/js/app.js"></script>' +
+                            '      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0Sg5Iahr2Ztad0aO88yaMJ6AGqN7FC0"></script>' +
+                            '      <meta charset="utf-8" />' +
+                            '      <title>Consultation</title>' +
+                            '    </head>' +
+                            '    <body onload="initialisation()">' +
+                            '<center>Immeubles de la région <strong>' + region + '</strong></center><br/>' +
+                            window.$(".fiche").parent().html() +
+                            '    </body>' +
+                            '</html>');
+                        res.end();
+
+                    });
+
+            }
+        }
+    )
+
 });
