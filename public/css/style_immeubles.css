@@ -14,3 +14,30 @@ h1 span:nth-child(1) {
 .map {
     height: 300px;
 }
+
+#formregions {
+    margin: auto;
+    width: 50%;
+}
+
+.navbar-inverse {
+    background-color: #0099CC !important;
+    border-color: white !important;
+}
+
+.submitformregions {
+    width: 100%;
+    background-color: #0099CC !important;
+    color: white !important;
+}
+
+select { text-align-last:center; }
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
+    color: #555555 !important;
+    background-color: #ffffff !important;
+}
+
+.navbar-inverse .navbar-nav>li>a, .navbar-inverse .navbar-brand {
+    color: #ffffff !important;
+}

@@ -18,44 +18,46 @@ var port = 8888;
 
 server.listen(port);
 
+var nav = '<nav class="navbar navbar-inverse">' +
+    '<div class="container-fluid">' +
+    '<div class="navbar-header"> ' +
+    '<a class="navbar-brand" href="/">Projet XML - Monuments</a> ' +
+    '</div> ' +
+    '<ul class="nav navbar-nav"> ' +
+    '<li><a href="/regions">Consultation par régions</a></li> ' +
+    '</ul> ' +
+    '<form class="navbar-form navbar-left"> ' +
+    '<div class="form-group"> ' +
+    '<input type="text" class="form-control" placeholder="TODO search"> ' +
+    '</div> ' +
+    '<img src="/img/search.png" height="25" width="25"> ' +
+    '</form> ' +
+    '</div> ' +
+    '</nav>';
+// <li class="active"><a href="#">Consultation par régions</a></li>
+
 // Route initiale
 app.get('/', function(req, res) {
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/consultation_immeubles3.xqy', function (error, response, body) {
-            if (!error && response.statusCode == 200) {
 
-                // Manipulation de la structure HTML réceptionnée du XQuery
-                jsdom.env(
-                    body,
-                    ["http://code.jquery.com/jquery.js"],
-                    function (err, window) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write('<!DOCTYPE html>' +
+        '<html>' +
+        '    <head>' +
+        '      <link rel="stylesheet" type="text/css" href="/css/style_immeubles.css">' +
+        '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
+        '      <script type="text/javascript" src="/js/app.js"></script>' +
+        '      <meta charset="utf-8" />' +
+        '      <title>Accueil</title>' +
+        '    </head>' +
+        '    <body onload="initialiserFormRegions()">' +
+        nav +
+        '<div class="container">' +
+        'Bienvenue' +
+        '</div>' +
+        '    </body>' +
+        '</html>');
+    res.end();
 
-                        // Exemple de récupération
-                        // var ref = window.$("h1 span:nth-child(1)").text();
-
-                        // On ajoute un élément pour la map pour chaque fiche
-                        window.$(".fiche").append('<div class="map"></div>');
-
-                        res.writeHead(200, {'Content-Type': 'text/html'});
-                        res.write('<!DOCTYPE html>' +
-                            '<html>' +
-                            '    <head>' +
-                            '      <link rel="stylesheet" type="text/css" href="/css/style_immeubles.css">' +
-                            '      <script type="text/javascript" src="/js/app.js"></script>' +
-                            '      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0Sg5Iahr2Ztad0aO88yaMJ6AGqN7FC0"></script>' +
-                            '      <meta charset="utf-8" />' +
-                            '      <title>Consultation</title>' +
-                            '    </head>' +
-                            '    <body onload="initialisation()">' +
-                            window.$(".fiche").parent().html() +
-                            '    </body>' +
-                            '</html>');
-                        res.end();
-
-                    });
-
-            }
-        }
-    )
 });
 
 app.get('/regions', function(req, res) {
@@ -93,23 +95,27 @@ app.get('/regions', function(req, res) {
                         });
 
                         // Création du formulaire
-                        var formulaireSelectionRegion = '<form id="formregions"><select name="regions">';
+                        var formulaireSelectionRegion = '<form id="formregions"><div class="form-group"><select class="form-control" name="regions">';
                         for (var i=0 ; i<regions.length ; i++) {
                             formulaireSelectionRegion += '<option value="' + regions[i] + '">' + regions[i] + '</option>';
                         }
-                        formulaireSelectionRegion += '</select><input type="submit" value="Afficher les monuments"></form>';
-                        console.log(formulaireSelectionRegion);
+                        formulaireSelectionRegion += '</select></div><input class="btn btn-default, submitformregions" type="submit" value="Afficher les monuments"></form>';
 
                         res.writeHead(200, {'Content-Type': 'text/html'});
                         res.write('<!DOCTYPE html>' +
                             '<html>' +
                             '    <head>' +
+                            '      <link rel="stylesheet" type="text/css" href="/css/style_immeubles.css">' +
+                            '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
                             '      <script type="text/javascript" src="/js/app.js"></script>' +
                             '      <meta charset="utf-8" />' +
-                            '      <title>Consultation</title>' +
+                            '      <title>Monuments par région</title>' +
                             '    </head>' +
                             '    <body onload="initialiserFormRegions()">' +
+                            nav +
+                            '<div class="container">' +
                                      formulaireSelectionRegion +
+                            '</div>' +
                             '    </body>' +
                             '</html>');
                         res.end();
@@ -139,7 +145,7 @@ app.get('/regions/:nomregion', function(req, res) {
     var region = req.params.nomregion;
     // Première lettre majuscule
     region = region.charAt(0).toUpperCase() + region.substring(1).toLowerCase();
-    
+
     request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-region.qxy?region=' + region,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -157,13 +163,15 @@ app.get('/regions/:nomregion', function(req, res) {
                         res.write('<!DOCTYPE html>' +
                             '<html>' +
                             '    <head>' +
+                            '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
                             '      <link rel="stylesheet" type="text/css" href="/css/style_immeubles.css">' +
                             '      <script type="text/javascript" src="/js/app.js"></script>' +
                             '      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0Sg5Iahr2Ztad0aO88yaMJ6AGqN7FC0"></script>' +
                             '      <meta charset="utf-8" />' +
-                            '      <title>Consultation</title>' +
+                            '      <title>' + region + '</title>' +
                             '    </head>' +
                             '    <body onload="initialisation()">' +
+                            nav +
                             '<center>Immeubles de la région <strong>' + region + '</strong></center><br/>' +
                             window.$(".fiche").parent().html() +
                             '    </body>' +
