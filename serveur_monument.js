@@ -297,15 +297,8 @@ app.get('/:nom/:page', function(req, res) {
     var nom = req.params.nom;
     var page = req.params.page;
 
-    var nbPages = 10;
-    var pagination = '<ul class="pagination pagination-lg">';
-    for (var i=1 ; i<nbPages+1 ; i++) {
-        pagination += '<li><a href="/' + nom + '/' + i + '">' + i + '</a></li>';
-    }
-    pagination += '</ul><br/>';
-
     // Côté serveur : peu importe les majuscules/minuscules
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fiche-monument-by-nom.xqy?nom=' + nom + "&page=" + page,
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fiche-monument-by-nom.xqy?nom=' + encodeURIComponent(nom) + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -322,7 +315,9 @@ app.get('/:nom/:page', function(req, res) {
                         }
                         else {
                             contenu += '<div class="alert alert-info" role="alert">Résultats pour votre recherche : <strong>' + nom + '</strong></div>';
-                            contenu += pagination;
+
+                            var nbPages = window.$("#conteneur-fiches").data("totalpages");
+                            contenu += genererPagination(nbPages, nom);
 
                             // On ajoute un élément pour la map pour chaque fiche
                             window.$(".fiche").append('<div class="map"></div>');
