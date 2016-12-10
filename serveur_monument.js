@@ -108,14 +108,9 @@ app.get('/zone/:niveau', function(req, res) {
                                 var niveauZoneCourante = window.$(this).text();
 
                                 var niveauZoneDecomposee = niveauZoneCourante.split(";");
-                                if (niveauZoneDecomposee) {
-                                    for (var i = 0; i < niveauZoneDecomposee.length; i++) {
-                                        niveauZoneTrouves.push(traiterTexte(niveauZoneDecomposee[i].trim()));
-                                        // On retire bien les potentiels espaces au début ou à la fin
-                                    }
-                                }
-                                else {
-                                    niveauZoneTrouves.push(traiterTexte(niveauZoneCourante));
+                                for (var i = 0; i < niveauZoneDecomposee.length; i++) {
+                                    // On retire bien les potentiels espaces au début ou à la fin
+                                    niveauZoneTrouves.push(traiterTexte(niveauZoneDecomposee[i].trim()));
                                 }
 
                             });
@@ -207,6 +202,10 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
         if (i < lieuCompo.length-1) { lieuMajFormat += "-"; }
     }
     lieu = lieuMajFormat;
+
+    if (niveau == "departement") {
+        lieu = lieu.toUpperCase();
+    }
 
     var nbPages = 10;
     var pagination = '<ul class="pagination pagination-lg">';
