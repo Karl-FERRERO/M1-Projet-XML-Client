@@ -77,3 +77,10 @@ select { text-align-last:center; }
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.alert-info {
+    color: #fff;
+    background-color: #a9a9a9;
+    border: none;
+    text-align: center;
+}

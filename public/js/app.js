@@ -19,18 +19,19 @@ function initialisation() {
         });
     }
 
+    activerFonctionRecherche();
 }
 
 Element.prototype.remove = function() {
     this.parentElement.removeChild(this);
-}
+};
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     for(var i = this.length - 1; i >= 0; i--) {
         if(this[i] && this[i].parentElement) {
             this[i].parentElement.removeChild(this[i]);
         }
     }
-}
+};
 
 function initialiserFormZone(niveau) {
 
@@ -55,4 +56,23 @@ function initialiserFormZone(niveau) {
         window.location = '/zone/' + zone;
     });
 
+    activerFonctionRecherche();
+
+}
+
+function activerFonctionRecherche() {
+
+    document.getElementById("formrecherche").addEventListener("submit", function(e){
+
+        e.preventDefault();
+        document.getElementById("search").click();
+
+    });
+
+    document.getElementById("search").addEventListener("click", function(e){
+        var lieuCherche = document.getElementById("formrecherche").getElementsByTagName("input")[0].value;
+
+        window.location = '/' + lieuCherche + '/1';
+
+    });
 }

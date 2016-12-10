@@ -27,11 +27,11 @@ var nav = '<nav class="navbar navbar-inverse">' +
     '<li><a href="/zone/region/">Consultation par zone</a></li> ' +
     '<li><a href="/stats/">Statistiques</a></li> ' +
     '</ul> ' +
-    '<form class="navbar-form navbar-left"> ' +
+    '<form class="navbar-form navbar-left" id="formrecherche"> ' +
     '<div class="form-group"> ' +
-    '<input type="text" class="form-control" placeholder="TODO search"> ' +
+    '<input type="text" class="form-control" placeholder="Nom d\'un monument..."> ' +
     '</div> ' +
-    '<img src="/img/search.png" height="25" width="25"> ' +
+    '<img src="/img/search.png" id="search" height="25"> ' +
     '</form> ' +
     '</div> ' +
     '</nav>';
@@ -51,7 +51,7 @@ app.get('/', function(req, res) {
         '      <meta charset="utf-8" />' +
         '      <title>Accueil</title>' +
         '    </head>' +
-        '    <body>' +
+        '    <body onload="activerFonctionRecherche()">' +
         nav +
         '<div class="container">' +
         'Bienvenue' +
@@ -204,7 +204,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
 
     var nbPages = 10;
     var pagination = '<ul class="pagination pagination-lg">';
-    for (var i=1 ; i<nbPages ; i++) {
+    for (var i=1 ; i<nbPages+1 ; i++) {
         pagination += '<li><a href="/zone/' + niveau + '/' + req.params.nomlieu + '/' + i + '">' + i + '</a></li>';
     }
     pagination += '</ul><br/>';
@@ -272,6 +272,72 @@ app.get('/stats', function(req, res) {
                     '    </body>' +
                     '</html>');
                 res.end();
+
+            }
+        }
+    )
+
+});
+
+app.get('/:nom/:page', function(req, res) {
+
+    var nom = req.params.nom;
+    var page = req.params.page;
+
+    var nbPages = 10;
+    var pagination = '<ul class="pagination pagination-lg">';
+    for (var i=1 ; i<nbPages+1 ; i++) {
+        pagination += '<li><a href="/' + nom + '/' + i + '">' + i + '</a></li>';
+    }
+    pagination += '</ul><br/>';
+
+    // Côté serveur : peu importe les majuscules/minuscules
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fiche-monument-by-nom.xqy?nom=' + nom + "&page=" + page,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                // Manipulation de la structure HTML réceptionnée du XQuery
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (err, window) {
+
+                        var contenu = "";
+
+                        if (window.$(".fiche").length == 0) {
+                            contenu += '<div class="alert alert-info" role="alert">Aucune fiche trouvée pour votre recherche : <strong>' + nom + '</strong></div>';
+                        }
+                        else {
+                            contenu += '<div class="alert alert-info" role="alert">Résultats pour votre recherche : <strong>' + nom + '</strong></div>';
+                            contenu += pagination;
+                            
+                            // On ajoute un élément pour la map pour chaque fiche
+                            window.$(".fiche").append('<div class="map"></div>');
+
+                            contenu += window.$(".fiche").parent().html();
+                        }
+
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write('<!DOCTYPE html>' +
+                            '<html>' +
+                            '    <head>' +
+                            '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
+                            '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
+                            '      <script type="text/javascript" src="/js/app.js"></script>' +
+                            '      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0Sg5Iahr2Ztad0aO88yaMJ6AGqN7FC0"></script>' +
+                            '      <meta charset="utf-8" />' +
+                            '      <title>Recherche ' + nom + '</title>' +
+                            '    </head>' +
+                            '    <body onload="initialisation()">' +
+                            nav +
+                            '<div class="container">' +
+                            contenu +
+                            '</div>' +
+                            '    </body>' +
+                            '</html>');
+                        res.end();
+
+                    });
 
             }
         }
