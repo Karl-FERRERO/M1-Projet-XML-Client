@@ -53,8 +53,14 @@ app.get('/', function(req, res) {
         '    </head>' +
         '    <body onload="activerFonctionRecherche()">' +
         nav +
-        '<div class="container">' +
-        'Bienvenue' +
+        '<div class="container" style="text-align: center;">' +
+        '<h4>Bienvenue sur votre outil de consultation de monuments</h4>' +
+        '<p>Projet XML proposé par M.Poulard, année master 1 MIAGE, participants :</p>' +
+        '<ul class="list-group">' +
+        '   <li class="list-group-item">Laeticia PIERRE</li>' +
+        '   <li class="list-group-item">Karl Ferrero</li> ' +
+        '   <li class="list-group-item">Florian Muller</li> ' +
+        '</ul>' +
         '</div>' +
         '    </body>' +
         '</html>');
@@ -262,9 +268,10 @@ app.get('/stats', function(req, res) {
                     '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
                     '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
                     '      <meta charset="utf-8" />' +
+                    '      <script type="text/javascript" src="/js/app.js"></script>' +
                     '      <title>Statistiques</title>' +
                     '    </head>' +
-                    '    <body>' +
+                    '    <body onload="activerFonctionRecherche()">' +
                     nav +
                     '<div class="container">' +
                     body +
@@ -310,7 +317,7 @@ app.get('/:nom/:page', function(req, res) {
                         else {
                             contenu += '<div class="alert alert-info" role="alert">Résultats pour votre recherche : <strong>' + nom + '</strong></div>';
                             contenu += pagination;
-                            
+
                             // On ajoute un élément pour la map pour chaque fiche
                             window.$(".fiche").append('<div class="map"></div>');
 
