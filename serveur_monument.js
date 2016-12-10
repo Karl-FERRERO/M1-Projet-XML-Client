@@ -214,7 +214,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
     }
     pagination += '</ul><br/>';
 
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-' + niveau + '.xqy?' + niveau + '=' + lieu + "&page=" + page,
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-' + niveau + '.xqy?' + niveau + '=' + encodeURIComponent(lieu) + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
