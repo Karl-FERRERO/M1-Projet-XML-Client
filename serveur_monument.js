@@ -25,6 +25,7 @@ var nav = '<nav class="navbar navbar-inverse">' +
     '</div> ' +
     '<ul class="nav navbar-nav"> ' +
     '<li><a href="/zone/region/">Consultation par zone</a></li> ' +
+    '<li><a href="/stats/">Statistiques</a></li> ' +
     '</ul> ' +
     '<form class="navbar-form navbar-left"> ' +
     '<div class="form-group"> ' +
@@ -241,6 +242,36 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
                         res.end();
 
                     });
+
+            }
+        }
+    )
+
+});
+
+app.get('/stats', function(req, res) {
+
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/stats_region.xqy',
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write('<!DOCTYPE html>' +
+                    '<html>' +
+                    '    <head>' +
+                    '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
+                    '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
+                    '      <meta charset="utf-8" />' +
+                    '      <title>Statistiques</title>' +
+                    '    </head>' +
+                    '    <body>' +
+                    nav +
+                    '<div class="container">' +
+                    body +
+                    '</div>' +
+                    '    </body>' +
+                    '</html>');
+                res.end();
 
             }
         }
