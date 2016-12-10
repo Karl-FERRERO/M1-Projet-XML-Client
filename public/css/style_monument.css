@@ -49,7 +49,7 @@ select { text-align-last:center; }
 }
 
 .pagination {
-    display: table;
+    display: block;
     margin: auto;
 }
 
@@ -83,4 +83,9 @@ select { text-align-last:center; }
     background-color: #a9a9a9;
     border: none;
     text-align: center;
+}
+
+.pagination-lg>li>a, .pagination-lg>li>span {
+    padding: 5px 10px;
+    font-size: 13px;
 }

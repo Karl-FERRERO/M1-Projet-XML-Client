@@ -207,13 +207,6 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
         lieu = lieu.toUpperCase();
     }
 
-    var nbPages = 10;
-    var pagination = '<ul class="pagination pagination-lg">';
-    for (var i=1 ; i<nbPages+1 ; i++) {
-        pagination += '<li><a href="/zone/' + niveau + '/' + req.params.nomlieu + '/' + i + '">' + i + '</a></li>';
-    }
-    pagination += '</ul><br/>';
-
     request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-' + niveau + '.xqy?' + niveau + '=' + encodeURIComponent(lieu) + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -223,6 +216,9 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
                     body,
                     ["http://code.jquery.com/jquery.js"],
                     function (err, window) {
+
+                        var nbPages = window.$("#conteneur-fiches").data("totalpages");
+                        var pagination = genererPagination(nbPages, 'zone/' + niveau + '/' + req.params.nomlieu);
 
                         // On ajoute un élément pour la map pour chaque fiche
                         window.$(".fiche").append('<div class="map"></div>');
@@ -253,6 +249,17 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
     )
 
 });
+
+function genererPagination(nbPages, chemin) {
+
+    var pagination = '<ul class="pagination pagination-lg">';
+    for (var i=1 ; i<nbPages+1 ; i++) {
+        pagination += '<li><a href="/' + chemin + '/' + i + '">' + i + '</a></li>';
+    }
+    pagination += '</ul><br/>';
+
+    return pagination;
+}
 
 app.get('/stats', function(req, res) {
 
