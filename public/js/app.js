@@ -72,7 +72,7 @@ function activerFonctionRecherche() {
     document.getElementById("search").addEventListener("click", function(e){
         var lieuCherche = document.getElementById("formrecherche").getElementsByTagName("input")[0].value;
 
-        window.location = '/' + lieuCherche + '/1';
+        window.location = '/recherche/' + lieuCherche + '/1';
 
     });
 }

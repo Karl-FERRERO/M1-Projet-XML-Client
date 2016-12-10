@@ -1,18 +1,14 @@
-div.fiche {
+/*div.fiche {
     margin: auto;
     width: 80%;
     text-align: center;
-}
+}*/
 h1 {
     color: #0099cc;
 }
 h1 span:nth-child(1) {
     font-style: italic;
     font-size: 11px;
-}
-
-.map {
-    height: 300px;
 }
 
 #formregions {
@@ -49,7 +45,6 @@ select { text-align-last:center; }
 }
 
 .pagination {
-    display: block;
     margin: auto;
 }
 
@@ -88,4 +83,18 @@ select { text-align-last:center; }
 .pagination-lg>li>a, .pagination-lg>li>span {
     padding: 5px 10px;
     font-size: 13px;
+}
+
+.fiche {
+    height: 130px;
+    border-radius: 12px;
+    border: 1px solid #999999;
+    text-align: center;
+}
+
+.fiche-titre {
+    color: #0099cc;
+    font-weight: bold;
+    margin-bottom: 1%;
+    font-size: medium;
 }

@@ -207,7 +207,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
         lieu = lieu.toUpperCase();
     }
 
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/monuments-by-' + niveau + '.xqy?' + niveau + '=' + encodeURIComponent(lieu) + "&page=" + page,
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/preview-by-' + niveau + '.xqy?' + niveau + '=' + encodeURIComponent(lieu) + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -220,8 +220,28 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
                         var nbPages = window.$("#conteneur-fiches").data("totalpages");
                         var pagination = genererPagination(nbPages, 'zone/' + niveau + '/' + req.params.nomlieu);
 
+                        window.$("#conteneur-fiches").addClass("row");
+
                         // On ajoute un élément pour la map pour chaque fiche
                         window.$(".fiche").append('<div class="map"></div>');
+                        window.$(".fiche").addClass("col-xs-6");
+
+                        // Titre
+                        window.$(".fiche div:nth-child(1)").addClass("fiche-titre");
+
+                        // Ajout petit icône devant l'adresse
+                        window.$(".fiche div:nth-child(2)").each(function () {
+                            var adresse = window.$(this).text();
+                            var iconeAdresse = '<img src="/img/location-pointer.png" height="20" style="margin-right: 2%;"/>';
+                            window.$(this).html(iconeAdresse + adresse);
+                        });
+
+                        // Acces grâce à la ref
+                        window.$(".fiche div:nth-child(3)").each(function () {
+                            var ref = window.$(this).text();
+                            var acces = '<button type="button" class="btn btn-secondary" onclick="window.location=\'/fiche/' + ref + '\'" style="margin-top: 2%;">Accéder à la fiche complète</button>';
+                            window.$(this).html(acces);
+                        });
 
                         res.writeHead(200, {'Content-Type': 'text/html'});
                         res.write('<!DOCTYPE html>' +
@@ -237,7 +257,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
                             '    <body onload="initialisation()">' +
                             nav +
                             pagination +
-                            window.$(".fiche").parent().html() +
+                            window.$("#conteneur-fiches").parent().html() +
                             '    </body>' +
                             '</html>');
                         res.end();
@@ -252,11 +272,11 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
 
 function genererPagination(nbPages, chemin) {
 
-    var pagination = '<ul class="pagination pagination-lg">';
+    var pagination = '<div><ul class="pagination pagination-lg">';
     for (var i=1 ; i<nbPages+1 ; i++) {
         pagination += '<li><a href="/' + chemin + '/' + i + '">' + i + '</a></li>';
     }
-    pagination += '</ul><br/>';
+    pagination += '</ul></div>';
 
     return pagination;
 }
@@ -292,13 +312,13 @@ app.get('/stats', function(req, res) {
 
 });
 
-app.get('/:nom/:page', function(req, res) {
+app.get('/recherche/:nom/:page', function(req, res) {
 
     var nom = req.params.nom;
     var page = req.params.page;
 
     // Côté serveur : peu importe les majuscules/minuscules
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fiche-monument-by-nom.xqy?nom=' + encodeURIComponent(nom) + "&page=" + page,
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/preview-by-nom.xqy?nom=' + encodeURIComponent(nom) + "&page=" + page,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
@@ -319,10 +339,30 @@ app.get('/:nom/:page', function(req, res) {
                             var nbPages = window.$("#conteneur-fiches").data("totalpages");
                             contenu += genererPagination(nbPages, nom);
 
+                            window.$("#conteneur-fiches").addClass("row");
+
                             // On ajoute un élément pour la map pour chaque fiche
                             window.$(".fiche").append('<div class="map"></div>');
+                            window.$(".fiche").addClass("col-xs-6");
 
-                            contenu += window.$(".fiche").parent().html();
+                            // Titre
+                            window.$(".fiche div:nth-child(1)").addClass("fiche-titre");
+
+                            // Ajout petit icône devant l'adresse
+                            window.$(".fiche div:nth-child(2)").each(function () {
+                                var adresse = window.$(this).text();
+                                var iconeAdresse = '<img src="/img/location-pointer.png" height="20" style="margin-right: 2%;"/>';
+                                window.$(this).html(iconeAdresse + adresse);
+                            });
+
+                            // Acces grâce à la ref
+                            window.$(".fiche div:nth-child(3)").each(function () {
+                                var ref = window.$(this).text();
+                                var acces = '<button type="button" class="btn btn-secondary" onclick="window.location=\'/fiche/' + ref + '\'" style="margin-top: 2%;">Accéder à la fiche complète</button>';
+                                window.$(this).html(acces);
+                            });
+
+                            contenu += window.$("#conteneur-fiches").parent().html();
                         }
 
                         res.writeHead(200, {'Content-Type': 'text/html'});
@@ -340,6 +380,54 @@ app.get('/:nom/:page', function(req, res) {
                             nav +
                             '<div class="container">' +
                             contenu +
+                            '</div>' +
+                            '    </body>' +
+                            '</html>');
+                        res.end();
+
+                    });
+
+            }
+        }
+    )
+
+});
+
+app.get('/fiche/:ref', function(req, res) {
+
+    var ref = req.params.ref;
+
+    // Côté serveur : peu importe les majuscules/minuscules
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fiche-by-ref.xqy?ref=' + ref,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                // Manipulation de la structure HTML réceptionnée du XQuery
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (err, window) {
+
+                        // On ajoute un élément pour la map pour la fiche
+                        window.$(".fiche-complete").append('<div class="map"></div>');
+
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write('<!DOCTYPE html>' +
+                            '<html>' +
+                            '    <head>' +
+                            '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
+                            '      <link rel="stylesheet" type="text/css" href="/css/style_fiche_complete.css">' +
+                            '      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0Sg5Iahr2Ztad0aO88yaMJ6AGqN7FC0"></script>' +
+                            '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
+                            '      <script type="text/javascript" src="/js/app.js"></script>' +
+                            '      <meta charset="utf-8" />' +
+                            '      <title>Fiche ' + ref +'</title>' +
+                            '    </head>' +
+                            '    <body onload="initialisation()">' +
+                            nav +
+                            '<div class="container">' +
+                            '<div class="titre">Fiche du monument</div> <hr/>' +
+                            window.$(".fiche-complete").parent().html() +
                             '</div>' +
                             '    </body>' +
                             '</html>');
