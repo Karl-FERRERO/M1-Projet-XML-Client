@@ -25,7 +25,7 @@ function addElements(i){
 	
 	// Transformation de la donnée en pourcentage
 	valeur = (tabDonnees[i]/sumTotal)*100
-	console.log("VAL : "+valeur);
+	
 	angleDepart=angleDepart;
 	angleFin=(angleDepart+valeur);
 
@@ -41,15 +41,31 @@ function addElements(i){
 	var rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect'); //Create a path in SVG's namespace
 	rect.setAttribute('width','16');
 	rect.setAttribute('height','16');
-	rect.setAttribute('x',260);
-	rect.setAttribute('y',30*i+70);
+	
+	if(i>18){
+		rect.setAttribute('x',550);
+		rect.setAttribute('y',30*(i-19)+70);
+	} else{
+		rect.setAttribute('x',260);
+		rect.setAttribute('y',30*i+70);
+	}
+	
+	
 	rect.setAttribute('fill',tabCouleur[i]);
 	rect.setAttribute('id','rect'+i);
 
 	// dessin des textes de legende
 	var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-	text.setAttribute('x', 280);
-	text.setAttribute('y', 30*i+70+12);
+	
+	if(i>18){
+		text.setAttribute('x', 570);
+		text.setAttribute('y', 30*(i-19)+70+12);
+	} else{
+		text.setAttribute('x', 280);
+		text.setAttribute('y', 30*i+70+12);
+	}
+	
+
 	text.setAttribute('fill', '#999');
 	text.setAttribute('font-size','12');
 	text.setAttribute('font-family','sans-serif');
@@ -114,7 +130,6 @@ function drawGraphCam(tab){
 	for (i = 0; i < tabDonnees.length; i++) { 
 	    sumTotal = sumTotal + parseInt(tabDonnees[i]);
 	}
-	console.log("SOMME : " + sumTotal);
 	
 	tabCouleur = [];
 	
@@ -125,7 +140,7 @@ function drawGraphCam(tab){
 	
 	cible='a';
 	// creation du SVG
-	document.getElementById(cible).innerHTML='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=600 height=1500></svg>';
+	document.getElementById(cible).innerHTML='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=800 height=600></svg>';
 	// pour chaque entree des tableaux on dessine les arc , carres et textes
 	for (i=0; i<tabDonnees.length;i++){
 		addElements(i);
