@@ -209,6 +209,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
 
     request('http://localhost:8080/exist/rest/db/projet_xml_m1/preview-by-' + niveau + '.xqy?' + niveau + '=' + encodeURIComponent(lieu) + "&page=" + page,
         function (error, response, body) {
+			Console.log(response.statusCode);
             if (!error && response.statusCode == 200) {
 
                 // Manipulation de la structure HTML réceptionnée du XQuery
@@ -434,6 +435,82 @@ app.get('/fiche/:ref', function(req, res) {
                         res.end();
 
                     });
+
+            }
+        }
+    )
+
+});
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+// Test pour camembert en CVG :
+app.get('/testCVG', function(req, res) {
+
+    // Côté serveur : peu importe les majuscules/minuscules
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/fonctions_xquery.xqy',
+        function (error, response, body) {
+			
+			console.log(response.statusCode);
+			test = body;
+			test = test.replaceAll("'","\\\'");
+			test = test.replaceAll("<REG>","\'");
+			test = test.replaceAll("</REG>","\',");
+			test = test.replaceAll("\n","");
+			test = test.substring(0, test.length -1);
+			
+            if (!error ){
+				console.log(test);
+                // Manipulation de la structure HTML réceptionnée du XQuery
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (err, window) {
+                        
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write('<!DOCTYPE html><html><head></head> ' +
+						'<body onload="drawGraphCam([' + test + '])"> '+
+						'<div id="a"></div> '+
+						'<script type="text/javascript" src="http://localhost:8080/exist/rest/db/projet_xml_m1/drawGraphCVG.js"></script> ' +
+						'</body></html>');
+                        res.end();
+
+                    });
+
+            }
+        }
+    )
+
+});
+
+// Affichage du nombre de monuments par région en histogramme
+app.get('/statsTest', function(req, res) {
+
+    request('http://localhost:8080/exist/rest/db/projet_xml_m1/stats_regions.xqy',
+        function (error, response, body) {
+            if (!error) {
+
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write('<!DOCTYPE html>' +
+                    '<html>' +
+                    '    <head>' +
+                    '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
+                    '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
+                    '      <meta charset="utf-8" />' +
+                    '      <script type="text/javascript" src="/js/app.js"></script>' +
+                    '      <title>Statistiques</title>' +
+                    '    </head>' +
+                    '    <body onload="activerFonctionRecherche()">' +
+                    nav +
+                    '<div class="container">' +
+                    body +
+                    '</div>' +
+                    '    </body>' +
+                    '</html>');
+                res.end();
 
             }
         }
