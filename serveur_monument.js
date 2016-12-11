@@ -337,7 +337,7 @@ app.get('/recherche/:nom/:page', function(req, res) {
                             contenu += '<div class="alert alert-info" role="alert">Résultats pour votre recherche : <strong>' + nom + '</strong></div>';
 
                             var nbPages = window.$("#conteneur-fiches").data("totalpages");
-                            contenu += genererPagination(nbPages, nom);
+                            contenu += genererPagination(nbPages, "recherche/" + nom);
 
                             window.$("#conteneur-fiches").addClass("row");
 
