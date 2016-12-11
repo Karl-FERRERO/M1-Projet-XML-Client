@@ -222,8 +222,6 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
 
                         window.$("#conteneur-fiches").addClass("row");
 
-                        // On ajoute un élément pour la map pour chaque fiche
-                        window.$(".fiche").append('<div class="map"></div>');
                         window.$(".fiche").addClass("col-xs-6");
 
                         // Titre
@@ -254,7 +252,7 @@ app.get('/zone/:niveau/:nomlieu/:page', function(req, res) {
                             '      <meta charset="utf-8" />' +
                             '      <title>' + lieu + '</title>' +
                             '    </head>' +
-                            '    <body onload="initialisation()">' +
+                            '    <body onload="fonctionsCommunes()">' +
                             nav +
                             pagination +
                             window.$("#conteneur-fiches").parent().html() +
@@ -341,8 +339,6 @@ app.get('/recherche/:nom/:page', function(req, res) {
 
                             window.$("#conteneur-fiches").addClass("row");
 
-                            // On ajoute un élément pour la map pour chaque fiche
-                            window.$(".fiche").append('<div class="map"></div>');
                             window.$(".fiche").addClass("col-xs-6");
 
                             // Titre
@@ -376,7 +372,7 @@ app.get('/recherche/:nom/:page', function(req, res) {
                             '      <meta charset="utf-8" />' +
                             '      <title>Recherche ' + nom + '</title>' +
                             '    </head>' +
-                            '    <body onload="initialisation()">' +
+                            '    <body onload="fonctionsCommunes()">' +
                             nav +
                             '<div class="container">' +
                             contenu +
@@ -408,7 +404,10 @@ app.get('/fiche/:ref', function(req, res) {
                     ["http://code.jquery.com/jquery.js"],
                     function (err, window) {
 
-                        // On ajoute un élément pour la map pour la fiche
+                        // On ajoute une élément image, qui contiendra une photo du monument
+                        window.$(".fiche-complete").prepend('<img id="photomonument" height="100" alt="monument" />');
+
+                        // On ajoute un élément pour la map, qui montrera l'emplacement du monyment
                         window.$(".fiche-complete").append('<div class="map"></div>');
 
                         res.writeHead(200, {'Content-Type': 'text/html'});
@@ -423,7 +422,7 @@ app.get('/fiche/:ref', function(req, res) {
                             '      <meta charset="utf-8" />' +
                             '      <title>Fiche ' + ref +'</title>' +
                             '    </head>' +
-                            '    <body onload="initialisation()">' +
+                            '    <body onload="initialisationFicheMonument(\'' + ref + '\')">' +
                             nav +
                             '<div class="container">' +
                             '<div class="titre">Fiche du monument</div> <hr/>' +

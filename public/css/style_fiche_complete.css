@@ -14,3 +14,12 @@
     margin-top: 3%;
     margin-bottom: 1%;
 }
+
+
+img#photomonument {
+    max-width: 100%;
+    height: 500px;
+    display: block;
+    margin: auto;
+    padding-bottom: 20px;
+}

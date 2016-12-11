@@ -1,37 +1,32 @@
-function initialisation() {
+/**
+ * On termine d'alimenter une fiche avec des données externes via SPARQL
+ * On ajoute l'image et on géolocalise sur la map
+ * @param ref référence unique du monument (ex : PA00104806)
+ */
+function initialisationFicheMonument(ref) {
 
-    // On charge la map pour tous les immeubles
-    var elementsMap = document.getElementsByClassName("map");
-    for (var i=0 ; i<elementsMap.length ; i++) {
+    var elementMap = document.getElementsByClassName("map")[0];
+    var details = getMonumentDetailByRef(ref.toUpperCase());
 
-        // Marqueur et lieu par défaut : Paris/Tour Eiffel
-        var myLatlng = new google.maps.LatLng(48.858093, 2.294694);
+    var position = details.longlat;
+    var myLatlng = new google.maps.LatLng(position[1], position[0]);
 
-        var map = new google.maps.Map(elementsMap.item(i), {
-            center: myLatlng,
-            zoom: 8
-        });
+    var map = new google.maps.Map(elementMap, {
+        center: myLatlng,
+        zoom: 17
+    });
 
-        var marqueur = new google.maps.Marker({
-            position: myLatlng,
-            title: 'Test marqueur',
-            map: map
-        });
-    }
+    new google.maps.Marker({
+        position: myLatlng,
+        map: map
+    });
 
-    activerFonctionRecherche();
+    var url = details.image;
+    var image = document.getElementById("photomonument");
+    image.src = url;
+
+    fonctionsCommunes();
 }
-
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
-};
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-    for(var i = this.length - 1; i >= 0; i--) {
-        if(this[i] && this[i].parentElement) {
-            this[i].parentElement.removeChild(this[i]);
-        }
-    }
-};
 
 function initialiserFormZone(niveau) {
 
@@ -56,14 +51,17 @@ function initialiserFormZone(niveau) {
         window.location = '/zone/' + zone;
     });
 
-    activerFonctionRecherche();
+    fonctionsCommunes();
 
+}
+
+function fonctionsCommunes() {
+    activerFonctionRecherche();
 }
 
 function activerFonctionRecherche() {
 
     document.getElementById("formrecherche").addEventListener("submit", function(e){
-
         e.preventDefault();
         document.getElementById("search").click();
 
@@ -73,6 +71,49 @@ function activerFonctionRecherche() {
         var lieuCherche = document.getElementById("formrecherche").getElementsByTagName("input")[0].value;
 
         window.location = '/recherche/' + lieuCherche + '/1';
-
     });
 }
+
+function getMonumentDetailByRefXml(ref) {
+
+    var query = "SELECT ?image ?longlat WHERE { ?subject wdt:P380 '"
+        + ref + "'. ?subject wdt:P18 ?image . ?subject wdt:P625 ?longlat}";
+
+    var url = "https://query.wikidata.org/bigdata/namespace/wdq/sparql";
+
+    var concat = url + "?query=" + query;
+
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", concat, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseXML;
+}
+
+/**
+ * Retourne un oobjet qui contient l'url de l'image et un tableau qui contient la localisation de ref
+ * objet retourné avec : image: url de l'image, longlat: [0:longitude,1:latitude]
+ *
+ * @param ref
+ */
+function getMonumentDetailByRef(ref){
+    var test = getMonumentDetailByRefXml(ref);
+
+    var imageUrl = test.getElementsByTagName("uri")[0].firstChild.data;
+    var location = test.getElementsByTagName("literal")[0].firstChild.data.slice(6, -1).split(" ");
+
+    //document.getElementById("test").innerHTML = "url : " + imageUrl + " et location : " + location;
+    return {'image': imageUrl, 'longlat': location};
+}
+
+/* FONCTIONS GLOBALES */
+
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+};
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+    for(var i = this.length - 1; i >= 0; i--) {
+        if(this[i] && this[i].parentElement) {
+            this[i].parentElement.removeChild(this[i]);
+        }
+    }
+};
