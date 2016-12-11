@@ -22,8 +22,12 @@ function monArc(x, y, rayon, angleDepart, angleFin){
  
 function addElements(i){
 	var svg = document.getElementsByTagName('svg')[0]; //Get le svg
+	
+	// Transformation de la donnée en pourcentage
+	valeur = (tabDonnees[i]/sumTotal)*100
+	console.log("VAL : "+valeur);
 	angleDepart=angleDepart;
-	angleFin=(angleDepart+tabDonnees[i]);
+	angleFin=(angleDepart+valeur);
 
 	// dessin des arcs de cercle
 	var path = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
@@ -51,7 +55,7 @@ function addElements(i){
 	text.setAttribute('font-family','sans-serif');
 	text.setAttribute('font-weight','normal');
 	text.setAttribute('id','text'+i);
-	text.textContent = tabLabel[i]+' ('+tabDonnees[i]+'%)';
+	text.textContent = tabLabel[i]+' ('+tabDonnees[i]+')';
 
 	// ajout des elements au svg
 	svg.appendChild(path);
@@ -91,6 +95,7 @@ function drawGraphCam(tab){
     tabLabel = [];
 	tabDonnees= [];
 	
+	
 	// Remplissage des tabLabel et tabDonnees :
 	for (i = 0; i < arr.length-1; i++) { 
 		//arr[i] = test.replaceAll("<REG>","");
@@ -101,10 +106,15 @@ function drawGraphCam(tab){
 		tabLabel.push(stat[0]);
 		
 		// Nombre de monuments dans la Région
-	    tabDonnees.push(parseFloat(stat[1]));
+	    tabDonnees.push(stat[1]);
 	}
 	
-	
+	sumTotal =0;
+	// Total des monuments :
+	for (i = 0; i < tabDonnees.length; i++) { 
+	    sumTotal = sumTotal + parseInt(tabDonnees[i]);
+	}
+	console.log("SOMME : " + sumTotal);
 	
 	tabCouleur = [];
 	
@@ -123,5 +133,5 @@ function drawGraphCam(tab){
 	}
 }
 var clickArc = function(){
-    alert(tabLabel[this.getAttribute("p")]+" : "+tabDonnees[this.getAttribute("p")]+"%");
+    alert(tabLabel[this.getAttribute("p")]+" : "+tabDonnees[this.getAttribute("p")]+"");
 }
