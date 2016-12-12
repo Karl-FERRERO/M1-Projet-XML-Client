@@ -22,10 +22,15 @@ function initialisationFicheMonument(ref) {
             map: map
         });
     }
+    else {
+        // Ne pas avoir l'espace attribué par la classe map
+        elementMap.classList.remove("map");
+    }
+
     if (details.image) {
+        var conteneurImage = document.getElementById("photomonument");
         var url = details.image;
-        var image = document.getElementById("photomonument");
-        image.src = url;
+        conteneurImage.innerHTML = '<img id="photomonument" src="' + url + '" height="100" alt="monument" />';
     }
 
     fonctionsCommunes();

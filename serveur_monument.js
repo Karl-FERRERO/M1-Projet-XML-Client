@@ -459,7 +459,7 @@ app.get('/fiche/:ref', function(req, res) {
                     function (err, window) {
 
                         // On ajoute une élément image, qui contiendra une photo du monument
-                        window.$(".fiche-complete").prepend('<img id="photomonument" height="100" alt="monument" />');
+                        window.$(".fiche-complete").prepend('<div id="photomonument"></div>');
 
                         // On ajoute un élément pour la map, qui montrera l'emplacement du monyment
                         window.$(".fiche-complete").append('<div class="map"></div>');
