@@ -279,13 +279,63 @@ function genererPagination(nbPages, chemin) {
     return pagination;
 }
 
-app.get('/stats', function(req, res) {
+// Affichage des statistiques (Camembert, Histogramme, Tableau)
+app.get('/stats/:type', function(req, res) {
+	
+	var type = req.params.type;
+	
+	// Traitement des différents affichages de statistiques :
+	requete = '';
+	
+	
+	if(type === 'camembert'){
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy';
+	}
+	else if(type === 'histogramme'){
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/stats_regions.xqy';
+	}
+	else if(type === 'tableau'){
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/stats_region.xqy';
+	}
 
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/stats_region.xqy',
+    request(requete,
         function (error, response, body) {
-            if (!error && response.statusCode == 200) {
+            if (!error) {
+				
+				bodyOnload = '    <body onload="activerFonctionRecherche()">';
+				bodyAffichage = body;
+				
+				if(type === 'camembert'){
+					requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy';
+					
+					// Traitement du body pour le camembert
+					stat = body;
+					stat = stat.replaceAll("'","\\\'");
+					stat = stat.replaceAll(";","-");
+					stat = stat.replaceAll("\n","");
+					stat = stat.replaceAll("\t","");
+					stat = stat.replaceAll("\r","");
+					stat = stat.replaceAll("&nbsp","");
 
-                res.writeHead(200, {'Content-Type': 'text/html'});
+					stat = stat.replaceAll("<STAT>","");
+					stat = stat.replaceAll("</STAT>",";");
+					
+					stat = stat.replaceAll("<REG>","");
+					stat = stat.replaceAll("</REG>",",");
+					stat = stat.replaceAll("<COUNT>","");
+					stat = stat.replaceAll("</COUNT>","");
+					
+					stat = stat.substring(0, stat.length - 1);
+					
+					bodyOnload = '<body onload= "drawGraphCam(\'' + stat + '\'); '+ 	
+						'	activerFonctionRecherche();" '+
+						'> ';
+					
+					// On n'affiche pas le body
+					bodyAffichage = '';
+				}
+				
+				res.writeHead(200, {'Content-Type': 'text/html'});
                 res.write('<!DOCTYPE html>' +
                     '<html>' +
                     '    <head>' +
@@ -293,12 +343,16 @@ app.get('/stats', function(req, res) {
                     '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
                     '      <meta charset="utf-8" />' +
                     '      <script type="text/javascript" src="/js/app.js"></script>' +
+					'	   <script type="text/javascript" src="/js/drawGraphCVG.js"> </script> '+
                     '      <title>Statistiques</title>' +
                     '    </head>' +
-                    '    <body onload="activerFonctionRecherche()">' +
+					bodyOnload +
                     nav +
-                    '<div class="container">' +
-                    body +
+					'<div> <button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
+					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
+					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button></div> '+
+                    '<div id="a" class="container">' +
+                    bodyAffichage +
                     '</div>' +
                     '    </body>' +
                     '</html>');
@@ -445,92 +499,3 @@ String.prototype.replaceAll = function(search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
-// Test pour camembert en CVG :
-app.get('/testCVG', function(req, res) {
-
-    // Côté serveur : peu importe les majuscules/minuscules
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy',
-        function (error, response, body) {
-			
-			stat = body;
-			stat = stat.replaceAll("'","\\\'");
-			stat = stat.replaceAll(";","-");
-			stat = stat.replaceAll("\n","");
-			stat = stat.replaceAll("\t","");
-			stat = stat.replaceAll("\r","");
-			stat = stat.replaceAll("&nbsp","");
-
-			
-			stat = stat.replaceAll("<STAT>","");
-			stat = stat.replaceAll("</STAT>",";");
-			
-			stat = stat.replaceAll("<REG>","");
-			stat = stat.replaceAll("</REG>",",");
-			stat = stat.replaceAll("<COUNT>","");
-			stat = stat.replaceAll("</COUNT>","");
-			
-			stat = stat.substring(0, stat.length - 1);
-			
-			console.log(stat);
-			
-			// Traitement du xml :
-	// <STAT>
-    //        <REG></REG>
-    //        <COUNT></COUNT>
-    // </STAT>
-			
-            if (!error ){
-				// Manipulation de la structure HTML réceptionnée du XQuery
-                jsdom.env(
-                    body,
-                    ["http://code.jquery.com/jquery.js"],
-                    function (err, window) {
-                        
-                        res.writeHead(200, {'Content-Type': 'text/html'});
-                        res.write('<!DOCTYPE html><html><head> '+
-							'<script type="text/javascript" src="/js/drawGraphCVG.js"> </script></head> ' +
-							'<body onload="drawGraphCam(\'' + stat + '\')"> '+
-							'\n<div id="a"></div> '+
-							
-							'</body></html>');
-						res.end();
-
-                    });
-
-            }
-        }
-    )
-
-});
-
-// Affichage du nombre de monuments par région en histogramme
-app.get('/statsTest', function(req, res) {
-
-    request('http://localhost:8080/exist/rest/db/projet_xml_m1/stats_regions.xqy',
-        function (error, response, body) {
-            if (!error) {
-
-                res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write('<!DOCTYPE html>' +
-                    '<html>' +
-                    '    <head>' +
-                    '      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" type="text/css">' +
-                    '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
-                    '      <meta charset="utf-8" />' +
-                    '      <script type="text/javascript" src="/js/app.js"></script>' +
-                    '      <title>Statistiques</title>' +
-                    '    </head>' +
-                    '    <body onload="activerFonctionRecherche()">' +
-                    nav +
-                    '<div class="container">' +
-                    body +
-                    '</div>' +
-                    '    </body>' +
-                    '</html>');
-                res.end();
-
-            }
-        }
-    )
-
-});

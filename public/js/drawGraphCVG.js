@@ -42,9 +42,9 @@ function addElements(i){
 	rect.setAttribute('width','16');
 	rect.setAttribute('height','16');
 	
-	if(i>18){
+	if(i>16){
 		rect.setAttribute('x',550);
-		rect.setAttribute('y',30*(i-19)+70);
+		rect.setAttribute('y',30*(i-17)+70);
 	} else{
 		rect.setAttribute('x',260);
 		rect.setAttribute('y',30*i+70);
@@ -57,9 +57,9 @@ function addElements(i){
 	// dessin des textes de legende
 	var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 	
-	if(i>18){
+	if(i>16){
 		text.setAttribute('x', 570);
-		text.setAttribute('y', 30*(i-19)+70+12);
+		text.setAttribute('y', 30*(i-17)+70+12);
 	} else{
 		text.setAttribute('x', 280);
 		text.setAttribute('y', 30*i+70+12);
