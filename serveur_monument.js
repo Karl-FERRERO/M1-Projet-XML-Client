@@ -25,7 +25,7 @@ var nav = '<nav class="navbar navbar-inverse">' +
     '</div> ' +
     '<ul class="nav navbar-nav"> ' +
     '<li><a href="/zone/region/">Consultation par zone</a></li> ' +
-    '<li><a href="/stats/">Statistiques</a></li> ' +
+    '<li><a href="/stats/camembert">Statistiques</a></li> ' +
     '</ul> ' +
     '<form class="navbar-form navbar-left" id="formrecherche"> ' +
     '<div class="form-group"> ' +
