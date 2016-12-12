@@ -8,29 +8,32 @@ function initialisationFicheMonument(ref) {
     var elementMap = document.getElementsByClassName("map")[0];
     var details = getMonumentDetailByRef(ref.toUpperCase());
 
-    var position = details.longlat;
-    var myLatlng = new google.maps.LatLng(position[1], position[0]);
+    if (details.longlat) {
+        var position = details.longlat;
+        var myLatlng = new google.maps.LatLng(position[1], position[0]);
 
-    var map = new google.maps.Map(elementMap, {
-        center: myLatlng,
-        zoom: 17
-    });
+        var map = new google.maps.Map(elementMap, {
+            center: myLatlng,
+            zoom: 17
+        });
 
-    new google.maps.Marker({
-        position: myLatlng,
-        map: map
-    });
-
-    var url = details.image;
-    var image = document.getElementById("photomonument");
-    image.src = url;
+        new google.maps.Marker({
+            position: myLatlng,
+            map: map
+        });
+    }
+    if (details.image) {
+        var url = details.image;
+        var image = document.getElementById("photomonument");
+        image.src = url;
+    }
 
     fonctionsCommunes();
 }
 
 function initialiserFormZone(niveau) {
 
-    document.getElementById("formzone").addEventListener("submit", function(e){
+    document.getElementById("formzone").addEventListener("submit", function (e) {
 
         e.preventDefault();
         var select = document.getElementsByName(niveau)[0];
@@ -40,7 +43,7 @@ function initialiserFormZone(niveau) {
 
     });
 
-    document.getElementById("switchzone").addEventListener("change", function() {
+    document.getElementById("switchzone").addEventListener("change", function () {
 
         var select = document.getElementsByName("zone")[0];
         var zone = select.options[select.selectedIndex].value;
@@ -61,13 +64,13 @@ function fonctionsCommunes() {
 
 function activerFonctionRecherche() {
 
-    document.getElementById("formrecherche").addEventListener("submit", function(e){
+    document.getElementById("formrecherche").addEventListener("submit", function (e) {
         e.preventDefault();
         document.getElementById("search").click();
 
     });
 
-    document.getElementById("search").addEventListener("click", function(e){
+    document.getElementById("search").addEventListener("click", function (e) {
         var lieuCherche = document.getElementById("formrecherche").getElementsByTagName("input")[0].value;
 
         window.location = '/recherche/' + lieuCherche + '/1';
@@ -84,8 +87,8 @@ function getMonumentDetailByRefXml(ref) {
     var concat = url + "?query=" + query;
 
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", concat, false );
-    xmlHttp.send( null );
+    xmlHttp.open("GET", concat, false);
+    xmlHttp.send(null);
     return xmlHttp.responseXML;
 }
 
@@ -95,11 +98,16 @@ function getMonumentDetailByRefXml(ref) {
  *
  * @param ref
  */
-function getMonumentDetailByRef(ref){
+function getMonumentDetailByRef(ref) {
     var test = getMonumentDetailByRefXml(ref);
-
-    var imageUrl = test.getElementsByTagName("uri")[0].firstChild.data;
-    var location = test.getElementsByTagName("literal")[0].firstChild.data.slice(6, -1).split(" ");
+    var imageUrl;
+    if (test.getElementsByTagName("uri")[0]) {
+        imageUrl = test.getElementsByTagName("uri")[0].firstChild.data;
+    }
+    var location;
+    if (test.getElementsByTagName("literal")[0]) {
+        location = test.getElementsByTagName("literal")[0].firstChild.data.slice(6, -1).split(" ");
+    }
 
     //document.getElementById("test").innerHTML = "url : " + imageUrl + " et location : " + location;
     return {'image': imageUrl, 'longlat': location};
@@ -107,12 +115,12 @@ function getMonumentDetailByRef(ref){
 
 /* FONCTIONS GLOBALES */
 
-Element.prototype.remove = function() {
+Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
 };
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-    for(var i = this.length - 1; i >= 0; i--) {
-        if(this[i] && this[i].parentElement) {
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
+    for (var i = this.length - 1; i >= 0; i--) {
+        if (this[i] && this[i].parentElement) {
             this[i].parentElement.removeChild(this[i]);
         }
     }
