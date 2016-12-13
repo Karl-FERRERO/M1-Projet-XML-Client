@@ -42,7 +42,7 @@ function initialiserFormZone(niveau) {
 
         e.preventDefault();
         var select = document.getElementsByName(niveau)[0];
-        var lieu = select.options[select.selectedIndex].value; // ou text ?
+        var lieu = select.options[select.selectedIndex].value;
 
         window.location = '/zone/' + niveau + '/' + lieu.toLowerCase() + '/1';
 
@@ -114,7 +114,6 @@ function getMonumentDetailByRef(ref) {
         location = test.getElementsByTagName("literal")[0].firstChild.data.slice(6, -1).split(" ");
     }
 
-    //document.getElementById("test").innerHTML = "url : " + imageUrl + " et location : " + location;
     return {'image': imageUrl, 'longlat': location};
 }
 
