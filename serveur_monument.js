@@ -25,7 +25,7 @@ var nav = '<nav class="navbar navbar-inverse">' +
     '</div> ' +
     '<ul class="nav navbar-nav"> ' +
     '<li><a href="/zone/region/">Consultation par zone</a></li> ' +
-    '<li><a href="/stats/camembert">Statistiques</a></li> ' +
+    '<li><a href="/stats/camembert/REG">Statistiques</a></li> ' +
     '</ul> ' +
     '<form class="navbar-form navbar-left" id="formrecherche"> ' +
     '<div class="form-group"> ' +
@@ -280,22 +280,23 @@ function genererPagination(nbPages, chemin) {
 }
 
 // Affichage des statistiques (Camembert, Histogramme, Tableau)
-app.get('/stats/:type', function(req, res) {
+app.get('/stats/:type/:lieu', function(req, res) {
 	
 	var type = req.params.type;
+	var lieu = req.params.lieu;
 	
 	// Traitement des différents affichages de statistiques :
 	requete = '';
 	
 	
 	if(type === 'camembert'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy?lieu='+lieu;
 	}
 	else if(type === 'histogramme'){
 		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy';
 	}
 	else if(type === 'tableau'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy?lieu='+lieu;
 	}
 
     request(requete,
@@ -316,6 +317,9 @@ app.get('/stats/:type', function(req, res) {
 					stat = stat.replaceAll("\t","");
 					stat = stat.replaceAll("\r","");
 					stat = stat.replaceAll("&nbsp","");
+					stat = stat.replaceAll("<html xmlns=\"http://www.w3.org/1999/xhtml\">","");
+					
+					stat = stat.replaceAll("</html'","");
 
 					stat = stat.replaceAll("<STAT>","");
 					stat = stat.replaceAll("</STAT>",";");
@@ -348,9 +352,9 @@ app.get('/stats/:type', function(req, res) {
                     '    </head>' +
 					bodyOnload +
                     nav +
-					'<div> <button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
-					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
-					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button></div> '+
+					'<div> <button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
+					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
+					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button></div> '+
                     '<div id="a" class="container">' +
                     bodyAffichage +
                     '</div>' +
@@ -459,7 +463,7 @@ app.get('/fiche/:ref', function(req, res) {
                     function (err, window) {
 
                         // On ajoute une élément image, qui contiendra une photo du monument
-                        window.$(".fiche-complete").prepend('<div id="photomonument"></div>');
+                        window.$(".fiche-complete").prepend('<img id="photomonument" height="100" alt="monument" />');
 
                         // On ajoute un élément pour la map, qui montrera l'emplacement du monyment
                         window.$(".fiche-complete").append('<div class="map"></div>');
