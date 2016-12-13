@@ -299,74 +299,80 @@ function genererPagination(nbPages, chemin) {
     return pagination;
 }
 
-
-
-
 /**
  * Consultation des statistiques
  * Paramètre dynamique : type pour l'affichage "camembert", "histogramme" ou "tableau"
  */
 app.get('/stats/:type/:lieu', function(req, res) {
-	
-	var type = req.params.type;
-	var lieu = req.params.lieu;
-	
-	// Traitement des différents affichages de statistiques :
-	requete = '';
-	
-	
-	if(type === 'camembert'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy?lieu='+lieu;
-	}
-	else if(type === 'histogramme'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy?lieu='+lieu;
-	}
-	else if(type === 'tableau'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy?lieu='+lieu;
-	}
+
+    var type = req.params.type;
+    var lieu = req.params.lieu;
+
+    // Traitement des différents affichages de statistiques :
+    requete = '';
+
+
+    if(type === 'camembert'){
+        requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy?lieu='+lieu;
+    }
+    else if(type === 'histogramme'){
+        requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy?lieu='+lieu;
+    }
+    else if(type === 'tableau'){
+        requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy?lieu='+lieu;
+    }
+
+    // On récupère l'autre type de lieu possible (REG ou DPT)
+    lieuInverse ="";
+    if(lieu === 'DPT'){
+        lieuInverse = 'REG';
+    }
+    else if(lieu === 'REG'){
+        lieuInverse = 'DPT';
+    }
 
     request(requete,
         function (error, response, body) {
             if (!error) {
 
-				
-				bodyOnload = '    <body onload="activerFonctionRecherche()">';
-				bodyAffichage = body;
-				
-				if(type === 'camembert'){
-					requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy';
-					
-					// Traitement du body pour le camembert
-					stat = body;
-					stat = stat.replaceAll("'","\\\'");
-					stat = stat.replaceAll(";","-");
-					stat = stat.replaceAll("\n","");
-					stat = stat.replaceAll("\t","");
-					stat = stat.replaceAll("\r","");
-					stat = stat.replaceAll("&nbsp","");
-					stat = stat.replaceAll("<html xmlns=\"http://www.w3.org/1999/xhtml\">","");
-					
-					stat = stat.replaceAll("</html'","");
 
-					stat = stat.replaceAll("<STAT>","");
-					stat = stat.replaceAll("</STAT>",";");
-					
-					stat = stat.replaceAll("<REG>","");
-					stat = stat.replaceAll("</REG>",",");
-					stat = stat.replaceAll("<COUNT>","");
-					stat = stat.replaceAll("</COUNT>","");
-					
-					stat = stat.substring(0, stat.length - 1);
-					
-					bodyOnload = '<body onload= "drawGraphCam(\'' + stat + '\'); '+ 	
-						'	activerFonctionRecherche();" '+
-						'> ';
-					
-					// On n'affiche pas le body
-					bodyAffichage = '';
-				}
-				
-				res.writeHead(200, {'Content-Type': 'text/html'});
+                bodyOnload = '    <body onload="activerFonctionRecherche()">';
+                bodyAffichage = body;
+
+                if(type === 'camembert'){
+                    requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy';
+
+                    // Traitement du body pour le camembert
+                    stat = body;
+                    stat = stat.replaceAll("'","\\\'");
+                    stat = stat.replaceAll(";","-");
+                    stat = stat.replaceAll("\n","");
+                    stat = stat.replaceAll("\t","");
+                    stat = stat.replaceAll("\r","");
+                    stat = stat.replaceAll("&nbsp","");
+                    stat = stat.replaceAll("<html xmlns=\"http://www.w3.org/1999/xhtml\">","");
+
+                    stat = stat.replaceAll("</html'","");
+
+                    stat = stat.replaceAll("<STAT>","");
+                    stat = stat.replaceAll("</STAT>",";");
+
+                    stat = stat.replaceAll("<REG>","");
+                    stat = stat.replaceAll("</REG>",",");
+                    stat = stat.replaceAll("<COUNT>","");
+                    stat = stat.replaceAll("</COUNT>","");
+
+                    stat = stat.substring(0, stat.length - 1);
+
+                    bodyOnload = '<body onload= "drawGraphCam(\'' + stat + '\'); '+
+                        '	activerFonctionRecherche();" '+
+                        '> ';
+
+                    // On n'affiche pas le body
+                    bodyAffichage = '';
+                }
+
+                res.writeHead(200, {'Content-Type': 'text/html'});
 
                 res.write('<!DOCTYPE html>' +
                     '<html>' +
@@ -381,10 +387,10 @@ app.get('/stats/:type/:lieu', function(req, res) {
                     bodyOnload +
                     nav +
 
-					'<div> <button type="button" class="btn btn-secondary" onclick="getPdfFromSVG()" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Télécharger</button> ' +
-                    '<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
-					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
-					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button></div> '+
+                    '<div> <button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert/'+lieu+'\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
+                    '<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme/'+lieu+'\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
+                    '<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau/'+lieu+'\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button>'+
+                    '<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/'+type+'/'+lieuInverse+'\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px; background-color: #4CAF50; ">'+lieuInverse+'</button></div> '+
 
                     '<div id="a" class="container">' +
                     bodyAffichage +
