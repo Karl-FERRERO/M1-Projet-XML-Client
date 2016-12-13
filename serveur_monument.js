@@ -471,6 +471,8 @@ app.get('/fiche/:ref', function(req, res) {
                         // On ajoute un élément pour la map, qui montrera l'emplacement du monyment
                         window.$(".fiche-complete").append('<div class="map"></div>');
 
+                        var content = window.$(".fiche-complete").parent().html() ? window.$(".fiche-complete").parent().html() : "Aucune donnée trouvée";
+
                         res.writeHead(200, {'Content-Type': 'text/html'});
                         res.end('<!DOCTYPE html>' +
                             '<html>' +
@@ -487,7 +489,7 @@ app.get('/fiche/:ref', function(req, res) {
                             nav +
                             '<div class="container">' +
                             '<div class="titre">Fiche du monument</div> <hr/>' +
-                            window.$(".fiche-complete").parent().html() +
+                            content +
                             '</div>' +
                             '    </body>' +
                             '</html>');
