@@ -319,7 +319,7 @@ app.get('/stats/:type/:lieu', function(req, res) {
 		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy?lieu='+lieu;
 	}
 	else if(type === 'histogramme'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy?lieu='+lieu;
 	}
 	else if(type === 'tableau'){
 		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy?lieu='+lieu;
