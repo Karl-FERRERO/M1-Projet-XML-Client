@@ -500,6 +500,14 @@ app.get('/fiche/:ref', function(req, res) {
 
 });
 
+/**
+ * Autres routes, non disponibles
+ */
+app.get('*', function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end(getHtmlPageIndisponible("Page indisponible"));
+});
+
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
