@@ -289,13 +289,13 @@ app.get('/stats/:type', function(req, res) {
 	
 	
 	if(type === 'camembert'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegion.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnCamembert.xqy';
 	}
 	else if(type === 'histogramme'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/stats_regions.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnHisto.xqy';
 	}
 	else if(type === 'tableau'){
-		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/stats_region.xqy';
+		requete = 'http://localhost:8080/exist/rest/db/projet_xml_m1/getMonumentsParRegionEnTableau.xqy';
 	}
 
     request(requete,
@@ -343,7 +343,7 @@ app.get('/stats/:type', function(req, res) {
                     '      <link rel="stylesheet" type="text/css" href="/css/style_monument.css">' +
                     '      <meta charset="utf-8" />' +
                     '      <script type="text/javascript" src="/js/app.js"></script>' +
-					'	   <script type="text/javascript" src="/js/drawGraphCVG.js"> </script> '+
+					'	   <script type="text/javascript" src="/js/drawCamembert.js"> </script> '+
                     '      <title>Statistiques</title>' +
                     '    </head>' +
 					bodyOnload +
