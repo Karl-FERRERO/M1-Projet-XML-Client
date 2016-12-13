@@ -117,6 +117,34 @@ function getMonumentDetailByRef(ref) {
     return {'image': imageUrl, 'longlat': location};
 }
 
+/**
+ * Envoie un svg au server qui le renvoie en pdf
+ */
+function getPdfFromSVG(){
+    var svg = document.getElementsByTagName("svg")[0];
+    var s = new XMLSerializer();
+    var url = 'http://localhost:4567/stats';
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.responseType = "blob";
+    xhr.setRequestHeader("Content-Type","application/xml");
+    xhr.onload = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var blob = new Blob([this.response], {type: 'application/pdf'});
+            var a = document.createElement("a");
+            a.style = "display: none";
+            document.body.appendChild(a);
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = 'stats.pdf';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    };
+    xhr.send(s.serializeToString(svg));
+}
+
+
 /* FONCTIONS GLOBALES */
 
 Element.prototype.remove = function () {

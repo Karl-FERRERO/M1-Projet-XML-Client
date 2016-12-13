@@ -381,7 +381,8 @@ app.get('/stats/:type/:lieu', function(req, res) {
                     bodyOnload +
                     nav +
 
-					'<div> <button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
+					'<div> <button type="button" class="btn btn-secondary" onclick="getPdfFromSVG()" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Télécharger</button> ' +
+                    '<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/camembert/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Camembert</button> '+
 					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/histogramme/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Histogramme</button> '+
 					'<button type="button" class="btn btn-secondary" onclick="window.location=\'/stats/tableau/REG\'" style="margin-bottom: 10px; margin-top: 10px; margin-left: 10px; margin-right: 10px;">Tableau</button></div> '+
 
